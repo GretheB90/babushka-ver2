@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="nb">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="style_2.css">
+	<title>Bistro Babushka</title>
+</head>
+
+<body>
+	<main id="single">
+		<button class="lukk">Tilbake</button>
+		<div id="container">
+			<article id="innhold">
+				<p class="kategori"></p>
+				<img class="bilde" src="" alt="">
+				<h3 class="navn"></h3>
+				<p class="kort"></p>
+				<p class="pris"></p>
+			</article>
+		</div>
+		<section id="liste"></section>
+	</main>
+	<script>
+		let urlParams = new URLSearchParams(window.location.search);
+		let menuItem = urlParams.get("menuItem");
+
+		let menu;
+		document.addEventListener("DOMContentLoaded", getJson);
+
+		async function getJson() {
+			let jsonData = await fetch("https://spreadsheets.google.com/feeds/list/17Dd7DvkPaFamNUdUKlrFgnH6POvBJXac7qyiS6zNRw0/od6/public/values?alt=json");
+			menu = await jsonData.json();
+			visMenu();
+		}
+
+		function visMenu() {
+
+			menu.feed.entry.forEach(menu => {
+				//husk at (menu fra linjen over går inn i if. ikke funksjonsnavn)
+				if (menu.gsx$id.$t == menuItem) {
+					//document.querySelector("p").textContent = menu.gsx$navn.$t; // sjekk disse her på alle html
+					document.querySelector(".navn").textContent = menu.gsx$navn.$t; // sjekk disse her på alle html
+					document.querySelector(".kort").textContent = menu.gsx$kort.$t;
+					document.querySelector(".pris").textContent = `${menu.gsx$pris.$t} Kroner`;
+					document.querySelector("img").src = `images/small/${menu.gsx$billede.$t}-sm.jpg`;
+				}
+			})
+
+			document.querySelector(".lukk").addEventListener("click", () => {
+				history.back();
+			})
+
+		}
+	</script>
+</body></html>
